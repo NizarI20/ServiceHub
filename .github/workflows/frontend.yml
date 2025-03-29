@@ -22,13 +22,21 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: cd fronend npm install
+        run: | 
+        cd fronend
+        npm install
 
       - name: Run lint
-        run: cd fronend npm run lint
+        run: | 
+        cd fronend
+        npm run lint
 
       - name: Run tests
-        run: cd fronend npm test
+        run: | 
+        cd fronend
+        npm test
 
       - name: Build project
-        run: cd fronend npm run build
+        run: |
+        cd fronend
+        npm run build
