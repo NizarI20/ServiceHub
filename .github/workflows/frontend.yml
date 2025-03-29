@@ -23,20 +23,20 @@ jobs:
 
       - name: Install dependencies
         run: | 
-        cd fronend
+        cd frontend
         npm install
 
       - name: Run lint
         run: | 
-        cd fronend
+        cd frontend
         npm run lint
 
       - name: Run tests
         run: | 
-        cd fronend
+        cd frontend
         npm test
 
       - name: Build project
         run: |
-        cd fronend
+        cd frontend
         npm run build
