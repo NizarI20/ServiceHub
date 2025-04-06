@@ -23,6 +23,3 @@ jobs:
 
     - name: Install dependencies
       run: cd Backend && npm install
-
-    - name: Start server in background
-      run: npm start
