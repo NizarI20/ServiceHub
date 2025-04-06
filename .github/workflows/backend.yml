@@ -22,7 +22,7 @@ jobs:
         node-version: '16'
 
     - name: Install dependencies
-      run: cd backend && npm install
+      run: cd Backend && npm install
 
     - name: Lint code
-      run: cd backend && npm run lint
+      run: cd Backend && npm run lint
