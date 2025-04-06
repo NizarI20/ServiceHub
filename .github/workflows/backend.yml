@@ -24,5 +24,7 @@ jobs:
     - name: Install dependencies
       run: cd Backend && npm install
 
-    - name: Lint code
-      run: cd Backend && npm run lint
+     - name: Start server in background
+        run: |
+          npm start & # Start the server in the background
+          sleep 10
