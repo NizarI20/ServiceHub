@@ -1,10 +1,8 @@
+import { Navbar } from "../../../components/navbar";
 
-export default function Home() {
+export default function ServiceList() {
     return (
-      <div>
-        <h1>Services List</h1>
-        <h2>TEST</h2>
-      </div>
+      <Navbar />
     );
   }
   
