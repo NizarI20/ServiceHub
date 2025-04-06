@@ -25,6 +25,4 @@ jobs:
       run: cd Backend && npm install
 
      - name: Start server in background
-        run: |
-          npm start & # Start the server in the background
-          sleep 10
+        run: npm start
