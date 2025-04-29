@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file://C%3A/ServiceHub/frontend/src/app/page.js"],"sourcesContent":["'use client';          // ← tell Next.js this component runs in the browser\r\n\r\nimport { useState } from 'react';\r\n\r\nexport default function ProfilePage() {\r\n  // …all of your useState, handlers, JSX etc…\r\n}\r\n"],"names":[],"mappings":";;;AAEA;AAFA,cAAuB,oDAAoD;;AAI5D,SAAS;AACtB,4CAA4C;AAC9C;KAFwB","debugId":null}}]
+}

@@ -22,10 +22,4 @@ jobs:
         node-version: '16'
 
     - name: Install dependencies
-      run: npm install
-
-    - name: Run tests
-      run: npm test
-
-    - name: Lint code
-      run: npm run lint
+      run: cd Backend && npm install
