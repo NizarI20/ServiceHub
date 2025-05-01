@@ -16,6 +16,7 @@ import Register from "./pages/Register";
 import Services from "./pages/Services";
 import ServiceDetails from "./pages/ServiceDetails";
 import Dashboard from "./pages/Dashboard";
+import ReservationsPage from "./pages/Reservations";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = ({ children }: { children: React.ReactNode }) => (
               <Route path="/services" element={<Services />} />
               <Route path="/services/:id" element={<ServiceDetails />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/reservations" element={<ReservationsPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

@@ -11,6 +11,7 @@ import { Calendar, Clock, MapPin, Tag, Award, ThumbsUp, CheckCircle } from 'luci
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/components/ui/sonner';
 import api from '@/lib/api';
+import { ReservationForm } from '@/components/ReservationForm';
 
 interface ServiceDetail extends ServiceData {
   description: string;
@@ -342,16 +343,23 @@ const ServiceDetails = () => {
                         <span>Satisfaction guaranteed</span>
                       </div>
                     </div>
-                  </div>
+              </div>
                 </CardContent>
-                <CardFooter>
-                  <Button 
-                    className="w-full bg-brand-600 hover:bg-brand-700"
-                    onClick={handleBookService}
-                    disabled={bookingLoading}
-                  >
-                    {bookingLoading ? 'Processing...' : 'Book This Service'}
-                  </Button>
+                <CardFooter className="flex flex-col">
+                  {isAuthenticated ? (
+                    <ReservationForm 
+                      serviceId={service.id}
+                      serviceName={service.title}
+                      price={service.price}
+                    />
+                  ) : (
+                    <Button 
+                      className="w-full bg-brand-600 hover:bg-brand-700"
+                      onClick={() => navigate('/login')}
+                    >
+                      Se connecter pour réserver
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
             </div>

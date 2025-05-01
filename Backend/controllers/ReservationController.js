@@ -4,7 +4,7 @@ import Notification from '../models/Notification.js';
 
 // Création d'une réservation (statut 'pending')
 export const createReservation = async (req, res) => {
-  const { serviceId, date } = req.body;
+  const { serviceId, startDate, endDate } = req.body;
   const clientId = req.user._id;
 
   try {
@@ -12,15 +12,32 @@ export const createReservation = async (req, res) => {
     if (!service) return res.status(404).json({ message: 'Service introuvable.' });
 
     // Vérifier qu'il n'y a pas de conflit de date (optionnel)
-    const existing = await Reservation.findOne({ service: serviceId, date });
-    if (existing) return res.status(400).json({ message: 'Ce créneau est déjà réservé.' });
+    const existingReservation = await Reservation.findOne({
+      service: serviceId,
+      $or: [
+        // Vérifie si une autre réservation chevauche la période demandée
+        { 
+          startDate: { $lte: endDate },
+          endDate: { $gte: startDate }
+        }
+      ]
+    });
+    
+    if (existingReservation) {
+      return res.status(400).json({ message: 'Ce créneau est déjà réservé.' });
+    }
 
-    const reservation = await Reservation.create({ client: clientId, service: serviceId, date });
+    const reservation = await Reservation.create({ 
+      client: clientId, 
+      service: serviceId, 
+      startDate,
+      endDate 
+    });
 
     // Notification au vendeur
     await Notification.create({
       user: service.owner,
-      message: `Nouvelle réservation pour \"${service.title}\" le ${new Date(date).toLocaleDateString()}`,
+      message: `Nouvelle réservation pour \"${service.title}\" du ${new Date(startDate).toLocaleDateString()} au ${new Date(endDate).toLocaleDateString()}`,
       reference: reservation._id,
     });
 
