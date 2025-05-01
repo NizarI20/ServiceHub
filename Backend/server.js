@@ -6,6 +6,7 @@ import Service from './models/Service.js'; // Notice the .js extension
 import serviceRoutes from './routes/serviceRoutes.js'; // Notice the .js extension
 import userRoutes from './routes/userRoutes.js'; // Notice the .js extension
 import categoryRoutes from './routes/categoryRoutes.js'; // Notice the .js extension
+import reservationRoutes from './routes/reservationRoutes.js'; // Import reservation routes
 import cors from 'cors'; // <-- Import CORS
 // const cors = require('cors');
 
@@ -23,9 +24,9 @@ app.use(cors()); // <-- Enable CORS for all routes
 app.use('/api/services', serviceRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
-
+app.use('/api/reservations', reservationRoutes);
 
 app.listen(
     PORT,
-    () => console.log('Its live on http://localhost:${PORT}')
+    () => console.log(`It's live on http://localhost:${PORT}`)
 )

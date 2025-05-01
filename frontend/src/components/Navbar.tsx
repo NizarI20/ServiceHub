@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Home, User, LogIn, Package, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Home, LogIn, Package, LayoutDashboard, Calendar, CalendarCheck } from 'lucide-react';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -39,6 +39,14 @@ const Navbar = () => {
                 <Link to="/dashboard" className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50">
                   <LayoutDashboard className="w-4 h-4 mr-1" />
                   Dashboard
+                </Link>
+                <Link to="/user-reservations" className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  Mes réservations
+                </Link>
+                <Link to="/reservations" className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50">
+                  <CalendarCheck className="w-4 h-4 mr-1" />
+                  Gérer les réservations
                 </Link>
                 <Button
                   variant="ghost"
@@ -108,6 +116,22 @@ const Navbar = () => {
               >
                 <LayoutDashboard className="w-5 h-5 mr-2" />
                 Dashboard
+              </Link>
+              <Link 
+                to="/user-reservations" 
+                className="flex items-center px-4 py-2 text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Calendar className="w-5 h-5 mr-2" />
+                Mes réservations
+              </Link>
+              <Link 
+                to="/reservations" 
+                className="flex items-center px-4 py-2 text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <CalendarCheck className="w-5 h-5 mr-2" />
+                Gérer les réservations
               </Link>
               <button 
                 onClick={() => {

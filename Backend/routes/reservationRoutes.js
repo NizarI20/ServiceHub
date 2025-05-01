@@ -4,8 +4,9 @@ import {
   confirmReservation,
   cancelReservation,
   getSellerReservations,
+  getUserReservations,
 } from '../controllers/ReservationController.js';
-import authMiddleware from '../middlewares/auth.js';
+import authMiddleware from '../middleswares/middleware.js';
 
 const router = express.Router();
 
@@ -23,5 +24,8 @@ router.patch('/:id/cancel', cancelReservation);
 
 // Récupérer les réservations du vendeur
 router.get('/seller', getSellerReservations);
+
+// Récupérer les réservations de l'utilisateur (acheteur)
+router.get('/user', getUserReservations);
 
 export default router;

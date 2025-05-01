@@ -119,3 +119,20 @@ export const getSellerReservations = async (req, res) => {
       return res.status(500).json({ message: 'Erreur interne.' });
     }
   };
+
+// Liste des réservations pour l'utilisateur (acheteur)
+export const getUserReservations = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    
+    // Trouver toutes les réservations où l'utilisateur est le client
+    const reservations = await Reservation.find({ client: userId })
+      .populate('service')
+      .sort('-createdAt');
+      
+    return res.json(reservations);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Erreur interne.' });
+  }
+};
