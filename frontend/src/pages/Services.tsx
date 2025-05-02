@@ -14,18 +14,25 @@ const ServicesPage = () => {
   const [filteredServices, setFilteredServices] = useState<ServiceProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+  const [categories, setCategories] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [sortBy, setSortBy] = useState('default');
   
-  const categories = ["All Categories", "Home Repair", "Web Design", "Cleaning", "Teaching", "Marketing", "Photography"];
+  
   
   useEffect(() => {
     const fetchServices = async () => {
       try {
         setIsLoading(true);
         // In a real app, you would include the category in the API request
+        // Extract category names from the response
+        const categoriesResponse = await api.get('/categories/');
+        const categoryNames = categoriesResponse.data.map((category: any) => category.nom);
+        // Add "All Categories" option
+        setCategories(['All Categories', ...categoryNames]);
+        // setCategories(categoriesResponse.data);
+        console.log('Fetched categories:', categoriesResponse.data);
         const response = await api.get('/services/');
         console.log('Fetched services:', response.data);
         const mappedServices = response.data.map((service: any) => ({
