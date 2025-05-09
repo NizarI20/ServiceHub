@@ -54,6 +54,7 @@ const ServicesPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [newCategory, setNewCategory] = useState<Category>(emptyCategory);
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
   // Fetch all services
   const fetchServices = async () => {
@@ -94,13 +95,26 @@ const ServicesPage: React.FC = () => {
     }));
   };
 
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+    if (!form.titre || form.titre.trim() === '') errors.titre = 'Le titre est requis';
+    if (!form.description || form.description.trim() === '') errors.description = 'La description est requise';
+    if (!form.prix || isNaN(Number(form.prix)) || Number(form.prix) <= 0) errors.prix = 'Le prix doit être un nombre positif';
+    if (!form.categorie) errors.categorie = 'La catégorie est requise';
+    // Optionally, validate image URL:
+    // if (form.featuredimg && !/^https?:\/\/.+\..+/.test(form.featuredimg)) errors.featuredimg = 'URL d\'image invalide';
+    return errors;
+  };
+
   // Create or update service
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
-    // Validate category
-    if (!form.categorie) {
-      alert('Veuillez sélectionner une catégorie');
+
+    // Validate all fields
+    const errors = validateForm();
+    setFormErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      // If there are errors, do not submit
       return;
     }
 
@@ -186,7 +200,9 @@ const ServicesPage: React.FC = () => {
       {/* Service Form */}
       <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow mb-6">
         <div className="mb-2">
-          <label className="block">Titre</label>
+          <label className="block">
+            Titre <span className="text-red-500">*</span>
+          </label>
           <input
             name="titre"
             value={form.titre}
@@ -194,9 +210,12 @@ const ServicesPage: React.FC = () => {
             className="w-full border p-2 rounded"
             required
           />
+          {formErrors?.titre && <div className="text-red-500 text-sm">{formErrors.titre}</div>}
         </div>
         <div className="mb-2">
-          <label className="block">Description</label>
+          <label className="block">
+            Description <span className="text-red-500">*</span>
+          </label>
           <textarea
             name="description"
             value={form.description}
@@ -204,9 +223,12 @@ const ServicesPage: React.FC = () => {
             className="w-full border p-2 rounded"
             required
           />
+          {formErrors?.description && <div className="text-red-500 text-sm">{formErrors.description}</div>}
         </div>
         <div className="mb-2">
-          <label className="block">Prix</label>
+          <label className="block">
+            Prix <span className="text-red-500">*</span>
+          </label>
           <input
             name="prix"
             type="number"
@@ -215,9 +237,12 @@ const ServicesPage: React.FC = () => {
             className="w-full border p-2 rounded"
             required
           />
+          {formErrors?.prix && <div className="text-red-500 text-sm">{formErrors.prix}</div>}
         </div>
         <div className="mb-2">
-          <label className="block">Disponibilité</label>
+          <label className="block">
+            Disponibilité <span className="text-red-500">*</span>
+          </label>
           <input
             name="disponibilite"
             type="checkbox"
@@ -228,17 +253,22 @@ const ServicesPage: React.FC = () => {
           Disponible
         </div>
         <div className="mb-2">
-          <label className="block">Condition</label>
+          <label className="block">
+            Condition <span className="text-red-500">*</span>
+          </label>
           <input
             name="condition"
             value={form.condition}
             onChange={handleChange}
             className="w-full border p-2 rounded"
+            required
           />
         </div>
         <div className="mb-2">
           <div className="flex justify-between items-center mb-1">
-            <label className="block">Catégorie <span className="text-red-500">*</span></label>
+            <label className="block">
+              Catégorie <span className="text-red-500">*</span>
+            </label>
             <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
@@ -299,9 +329,12 @@ const ServicesPage: React.FC = () => {
               </option>
             ))}
           </select>
+          {formErrors?.categorie && <div className="text-red-500 text-sm">{formErrors.categorie}</div>}
         </div>
         <div className="mb-2">
-          <label className="block">Image (URL)</label>
+          <label className="block">
+            Image (URL)
+          </label>
           <input
             name="featuredimg"
             value={form.featuredimg}
