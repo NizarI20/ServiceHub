@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -12,29 +11,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/components/ui/sonner';
 import api from '@/lib/api';
 
-interface ServiceDetail extends ServiceData {
-  description: string;
-  longDescription?: string;
-  location?: string;
-  duration?: string;
-  experience?: string;
-  features?: string[];
-  reviews?: Review[];
-}
-
-interface Review {
-  id: string;
-  userId: string;
-  userName: string;
-  rating: number;
-  comment: string;
-  date: string;
-  userImage?: string;
-}
-
-interface ServiceData {
+interface ServiceDetail {
   id: string;
   title: string;
+  description: string;
+  longDescription?: string;
   price: number;
   category: string;
   provider: {
@@ -45,6 +26,23 @@ interface ServiceData {
     profileImage?: string;
   };
   imageUrl?: string;
+  location?: string;
+  duration?: string;
+  experience?: string;
+  features?: string[];
+  reviews?: Review[];
+  disponibilite: boolean;
+  condition: string;
+}
+
+interface Review {
+  id: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: string;
+  userImage?: string;
 }
 
 const ServiceDetails = () => {
@@ -64,11 +62,8 @@ const ServiceDetails = () => {
         setIsLoading(true);
         setError(null);
         
-        // In a real app, you would fetch from the API
-        // const response = await api.get(`/services/${id}`);        
-        // For demo purposes, mock data based on the ID
         const response = await api.get(`/services/${id}`);
-        // console.log('Fetched service detail:', response.data);
+        console.log('Fetched service detail:', response.data);
   
         const data = response.data;
   
@@ -76,31 +71,36 @@ const ServiceDetails = () => {
           id: data._id,
           title: data.titre,
           description: data.description,
-          longDescription: data.longDescription || data.description,
+          longDescription: data.description, // Using description as longDescription
           price: data.prix,
           category: data.categorie?.nom || 'Uncategorized',
           provider: {
             id: data.createdBy?._id || '',
             name: data.createdBy?.name || 'Unknown',
-            rating: data.createdBy?.rating, // Only if your User model has rating
-            completedJobs: data.createdBy?.completedJobs, // Only if your User model has this
-            profileImage: data.createdBy?.profileImage, // Only if available
+            rating: data.createdBy?.rating,
+            completedJobs: data.createdBy?.completedJobs,
+            profileImage: data.createdBy?.profileImage,
           },
           imageUrl: data.featuredimg,
-          location: 'Remote / Nationwide', // ← optional, static
-          duration: data.duration,             // ← optional, static
-          experience: '5+ years',            // ← optional, static
-          features: [],                      // ← optional, if you don't have features in backend
-          reviews: [],                       // ← optional, unless you populate reviews
+          disponibilite: data.disponibilite,
+          condition: data.condition,
+          location: 'Remote / Nationwide',
+          duration: 'Standard delivery time',
+          experience: 'Professional service',
+          features: [
+            'Quality guaranteed',
+            'Professional service',
+            data.condition,
+            data.disponibilite ? 'Available now' : 'Currently unavailable'
+          ],
+          reviews: []
         };
   
         setService(mappedService);
-  
-        setIsLoading(false);
-        
       } catch (err) {
         console.error('Error fetching service details:', err);
         setError('Failed to load service details. Please try again later.');
+      } finally {
         setIsLoading(false);
       }
     };
@@ -118,12 +118,7 @@ const ServiceDetails = () => {
     setBookingLoading(true);
     
     try {
-      // In a real app, make an API call to book the service
-      // await api.post('/bookings', { serviceId: id });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await api.post('/bookings', { serviceId: id });
       toast.success('Service booked successfully!');
       navigate('/dashboard');
     } catch (error) {

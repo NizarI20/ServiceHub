@@ -17,6 +17,7 @@ import Services from "./pages/Services";
 import ServiceDetails from "./pages/ServiceDetails";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import SellServices from "./pages/SellServices";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = ({ children }: { children: React.ReactNode }) => (
               <Route path="/services" element={<Services />} />
               <Route path="/services/:id" element={<ServiceDetails />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/sellservices" element={<SellServices />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
