@@ -1,5 +1,5 @@
 // Backend File: models/Profile.js
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const ProfileSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -25,4 +25,5 @@ const ProfileSchema = new mongoose.Schema({
   ],
 }, { timestamps: true });
 
-module.exports = mongoose.model('Profile', ProfileSchema);
+const Profile = mongoose.model('Profile', ProfileSchema);
+export default Profile;

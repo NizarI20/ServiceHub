@@ -7,8 +7,7 @@ import serviceRoutes from './routes/serviceRoutes.js'; // Notice the .js extensi
 import userRoutes from './routes/userRoutes.js'; // Notice the .js extension
 import categoryRoutes from './routes/categoryRoutes.js'; // Notice the .js extension
 import cors from 'cors'; // <-- Import CORS
-// const cors = require('cors');
-
+import profileRoutes from './routes/profileRoutes.js'; // Notice the .js extension
 const app = express();
 
 const PORT = 3000;
@@ -23,9 +22,10 @@ app.use(cors()); // <-- Enable CORS for all routes
 app.use('/api/services', serviceRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/profile', profileRoutes);
 
 
 app.listen(
     PORT,
-    () => console.log('Its live on http://localhost:${PORT}')
+    () => console.log(`Its live on http://localhost:${PORT}`)
 )
