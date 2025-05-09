@@ -8,12 +8,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-<<<<<<< HEAD
-    }
-  },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/profile.js"],
-  "exclude": ["node_modules"]
-=======
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,
@@ -22,5 +16,4 @@
     "noUnusedLocals": false,
     "strictNullChecks": false
   }
->>>>>>> 45b2b89bd12e3bf6a4defaca34bf96e5c79cd1d0
 }
