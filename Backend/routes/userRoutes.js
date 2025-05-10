@@ -1,18 +1,18 @@
 import express from 'express';
-import { register, login, getAllUsers, getUserById } from '../controllers/userController.js';
+import { register, login, getAllUsers, getUserById, getCurrentUser } from '../controllers/userController.js';
+import { authenticateUser } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Route for user registration
+// Public routes
 router.post('/register', register);
-
-// Route for user login
 router.post('/login', login);
 
-// Route to get all users
-router.get('/', getAllUsers);
+// Protected routes - require authentication
+router.get('/me', authenticateUser, getCurrentUser);
 
-// Route to get a user by ID
+// Admin routes
+router.get('/', getAllUsers);
 router.get('/:id', getUserById);
 
 export default router;

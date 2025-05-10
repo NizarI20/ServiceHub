@@ -8,7 +8,7 @@ const serviceSchema = new mongoose.Schema({
   condition: String,
   categorie: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  featuredimg: {  type: String, default: 'https://example.com/default-image.jpg' },
+  featuredimg: {  type: String, default: 'https://idweek.org/wp-content/uploads/2021/02/placeholder.png' },
 }, { timestamps: true });
 
 export default mongoose.model('Service', serviceSchema);

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/sonner';
@@ -23,7 +22,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+// Create a named function for the hook to ensure consistent exports
+function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
+
+// Create a named function for the provider component
+function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +51,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchUserProfile = async (authToken: string) => {
     try {
-      const response = await api.get('/users/me');
+      // Set the authorization header for this specific request
+      const response = await api.get('/users/me', {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      });
+      
       setUser(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -75,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (name: string, email: string, password: string, role: 'client' | 'provider') => {
     try {
       setIsLoading(true);
-      const response = await api.post('/users/register', {
+      const response = await api.post('/users/register/', {
         name,
         email,
         password,
@@ -120,12 +135,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+// Export both the provider and hook
+export { AuthProvider, useAuth };
