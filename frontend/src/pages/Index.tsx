@@ -5,9 +5,7 @@ import Navbar from "@/components/Navbar";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      
+    <div className="min-h-screen flex flex-col">      
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative bg-brand-900 text-white">

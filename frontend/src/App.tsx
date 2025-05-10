@@ -10,13 +10,14 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 
 // Import pages
-import Home from "./app/page";
+import Home from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Services from "./pages/Services";
 import ServiceDetails from "./pages/ServiceDetails";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
 import SellServices from "./pages/SellServices";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = ({ children }: { children: React.ReactNode }) => (
               <Route path="/services" element={<Services />} />
               <Route path="/services/:id" element={<ServiceDetails />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/sellservices" element={<SellServices />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
