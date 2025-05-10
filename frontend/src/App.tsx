@@ -10,7 +10,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 
 // Import pages
-import Home from "./app/page";
+import Home from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Services from "./pages/Services";
