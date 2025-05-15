@@ -62,8 +62,8 @@ function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
-      localStorage.removeItem('token');
-      setToken(null);
+      // Don't remove the token on error, just set isLoading to false
+      // This prevents users from being logged out if the server is temporarily unavailable
       setIsLoading(false);
     }
   };

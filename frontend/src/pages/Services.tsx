@@ -37,20 +37,25 @@ const ServicesPage = () => {
         console.log('Fetched services:', response.data);
 
         // Map the services to match the ServiceProps interface
-        const mappedServices = response.data.map((service: any) => ({
-          id: service._id,
-          title: service.titre,
-          description: service.description,
-          price: service.prix,
-          category: service.categorie?.nom || 'Uncategorized',
-          provider: {
-            id: service.createdBy?._id || '',
-            name: service.createdBy?.name || 'Unknown',
-          },
-          imageUrl: service.featuredimg || 'https://via.placeholder.com/300x200',
-          disponibilite: service.disponibilite,
-          condition: service.condition
-        }));
+        const mappedServices = response.data.map((service: any) => {
+          console.log('Processing service:', service);
+          return {
+            id: service._id,
+            title: service.titre || '',
+            description: service.description || '',
+            price: service.prix || 0,
+            category: service.categorie?.nom || 'Uncategorized',
+            provider: {
+              id: service.createdBy?._id || '',
+              name: service.createdBy?.name || 'Unknown Provider',
+            },
+            imageUrl: service.featuredimg || 'https://via.placeholder.com/300x200',
+            disponibilite: service.disponibilite !== undefined ? service.disponibilite : true,
+            condition: service.condition || ''
+          };
+        });
+        
+        console.log('Mapped services:', mappedServices);
 
         setServices(mappedServices);
         setFilteredServices(mappedServices);

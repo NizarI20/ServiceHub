@@ -8,6 +8,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Import pages
 import Home from "./pages/Index";
@@ -30,14 +31,30 @@ const App = ({ children }: { children: React.ReactNode }) => (
           <Navbar />
           <main className="flex-grow">
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/services" element={<Services />} />
               <Route path="/services/:id" element={<ServiceDetails />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/sellservices" element={<SellServices />} />
+              
+              {/* Protected Routes - require authentication */}
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/sellservices" element={
+                <ProtectedRoute requiredRole="provider">
+                  <SellServices />
+                </ProtectedRoute>
+              } />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

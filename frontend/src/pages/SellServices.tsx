@@ -1,5 +1,6 @@
 import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
-import axios from 'axios';
+import { useAuth } from '@/contexts/AuthContext';
+import api from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -47,6 +48,7 @@ const emptyCategory: Omit<Category, '_id'> = {
 };
 
 const ServicesPage: React.FC = () => {
+  const { user, isAuthenticated } = useAuth();
   const [services, setServices] = useState<Service[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [form, setForm] = useState<Service>(emptyService);
@@ -60,7 +62,7 @@ const ServicesPage: React.FC = () => {
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const res = await axios.get<Service[]>('http://localhost:3000/api/services');
+      const res = await api.get<Service[]>('/services');
       setServices(res.data);
     } catch (err) {
       console.error('Error fetching services:', err);
@@ -72,7 +74,7 @@ const ServicesPage: React.FC = () => {
   // Fetch categories
   const fetchCategories = async () => {
     try {
-      const res = await axios.get<Category[]>('http://localhost:3000/api/categories');
+      const res = await api.get<Category[]>('/categories');
       setCategories(res.data);
     } catch (err) {
       console.error('Error fetching categories:', err);
@@ -122,12 +124,12 @@ const ServicesPage: React.FC = () => {
     try {
       if (editingId) {
         // Update
-        const response = await axios.put(`http://localhost:3000/api/services/${editingId}`, form);
+        const response = await api.put(`/services/${editingId}`, form);
         console.log('Update response:', response.data);
         setEditingId(null);
       } else {
         // Create
-        const response = await axios.post('http://localhost:3000/api/services', form);
+        const response = await api.post('/services', form);
         console.log('Create response:', response.data);
       }
       setForm(emptyService);
@@ -148,17 +150,18 @@ const ServicesPage: React.FC = () => {
   // Delete service
   const handleDelete = async (id?: string) => {
     if (!id) return;
-    if (!window.confirm('Supprimer ce service ?')) return;
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce service ?')) return;
+
     setLoading(true);
     try {
-      const response = await axios.delete(`http://localhost:3000/api/services/${id}`);
-      console.log('Delete response:', response.data);
-      await fetchServices();
-    } catch (err: any) {
-      console.error('Error deleting service:', err.response?.data || err.message);
-      alert(err.response?.data?.error || 'Erreur lors de la suppression');
+      await api.delete(`/services/${id}`);
+      fetchServices();
+    } catch (err) {
+      console.error('Error deleting service:', err);
+      alert('Erreur lors de la suppression du service');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   // Cancel editing
@@ -170,26 +173,19 @@ const ServicesPage: React.FC = () => {
   // Create new category
   const handleCreateCategory = async (e: FormEvent) => {
     e.preventDefault();
+    if (!newCategory.nom || !newCategory.description) {
+      alert('Veuillez remplir tous les champs');
+      return;
+    }
+
     try {
-      // Only send nom and description to the backend
-      const categoryData = {
-        nom: newCategory.nom,
-        description: newCategory.description
-      };
-      
-      const response = await axios.post('http://localhost:3000/api/categories', categoryData);
-      console.log('Category created:', response.data);
-      setCategories(prev => [...prev, response.data]);
+      const res = await api.post('/categories', newCategory);
+      setCategories(prev => [...prev, res.data]);
       setNewCategory(emptyCategory);
       setIsCategoryDialogOpen(false);
-      // Update the service form to use the new category
-      setForm(prev => ({
-        ...prev,
-        categorie: response.data._id
-      }));
-    } catch (err: any) {
-      console.error('Error creating category:', err.response?.data || err.message);
-      alert(err.response?.data?.error || 'Erreur lors de la création de la catégorie');
+    } catch (err) {
+      console.error('Error creating category:', err);
+      alert('Erreur lors de la création de la catégorie');
     }
   };
 
