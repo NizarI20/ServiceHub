@@ -8,17 +8,18 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Import pages
-import Home from "./app/page";
+import Home from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Services from "./pages/Services";
 import ServiceDetails from "./pages/ServiceDetails";
 import Dashboard from "./pages/Dashboard";
-import ReservationsPage from "./pages/Reservations";
-import UserReservationsPage from "./pages/UserReservations";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
+import SellServices from "./pages/SellServices";
 
 const queryClient = new QueryClient();
 
@@ -30,14 +31,30 @@ const App = ({ children }: { children: React.ReactNode }) => (
           <Navbar />
           <main className="flex-grow">
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/services" element={<Services />} />
               <Route path="/services/:id" element={<ServiceDetails />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/reservations" element={<ReservationsPage />} />
-              <Route path="/user-reservations" element={<UserReservationsPage />} />
+              
+              {/* Protected Routes - require authentication */}
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/sellservices" element={
+                <ProtectedRoute requiredRole="provider">
+                  <SellServices />
+                </ProtectedRoute>
+              } />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

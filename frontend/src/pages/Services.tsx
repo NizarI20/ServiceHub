@@ -14,38 +14,55 @@ const ServicesPage = () => {
   const [filteredServices, setFilteredServices] = useState<ServiceProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+  const [categories, setCategories] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [sortBy, setSortBy] = useState('default');
   
-  const categories = ["All Categories", "Home Repair", "Web Design", "Cleaning", "Teaching", "Marketing", "Photography"];
+  
   
   useEffect(() => {
     const fetchServices = async () => {
       try {
         setIsLoading(true);
-        // In a real app, you would include the category in the API request
-        const response = await api.get('/services/');
+        setError(null);
+
+        // Fetch categories
+        const categoriesResponse = await api.get('/categories');
+        const categoryNames = categoriesResponse.data.map((category: any) => category.nom);
+        setCategories(['All Categories', ...categoryNames]);
+
+        // Fetch services
+        const response = await api.get('/services');
         console.log('Fetched services:', response.data);
-        const mappedServices = response.data.map((service: any) => ({
-          id: service._id,
-          title: service.titre,
-          description: service.description,
-          price: service.prix,
-          category: service.categorie?.nom || "Uncategorized",
-          provider: {
-            id: service.createdBy?._id || '',
-            name: service.createdBy?.name || 'Unknown',
-          },
-          imageUrl: service.featuredimg,
-        }));
-    
+
+        // Map the services to match the ServiceProps interface
+        const mappedServices = response.data.map((service: any) => {
+          console.log('Processing service:', service);
+          return {
+            id: service._id,
+            title: service.titre || '',
+            description: service.description || '',
+            price: service.prix || 0,
+            category: service.categorie?.nom || 'Uncategorized',
+            provider: {
+              id: service.createdBy?._id || '',
+              name: service.createdBy?.name || 'Unknown Provider',
+            },
+            imageUrl: service.featuredimg || 'https://via.placeholder.com/300x200',
+            disponibilite: service.disponibilite !== undefined ? service.disponibilite : true,
+            condition: service.condition || ''
+          };
+        });
+        
+        console.log('Mapped services:', mappedServices);
+
         setServices(mappedServices);
+        setFilteredServices(mappedServices);
       } catch (err) {
         console.error('Error fetching services:', err);
         setError('Failed to load services. Please try again later.');
-        } finally {
+      } finally {
         setIsLoading(false);
       }
     };

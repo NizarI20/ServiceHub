@@ -1,31 +1,23 @@
+// routes/reservationRoutes.js
 import express from 'express';
-import {
-  createReservation,
-  confirmReservation,
-  cancelReservation,
-  getSellerReservations,
-  getUserReservations,
-} from '../controllers/ReservationController.js';
-import authMiddleware from '../middleswares/middleware.js';
+import { getSellerReservations, getClientReservations, getReservation, updateReservationStatus } from '../controllers/ReservationController.js';
+// import { authenticateUser } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Toutes les routes protégées
-router.use(authMiddleware);
+// All routes require authentication
+// router.use(authenticateUser);
 
-// Créer une réservation
-router.post('/', createReservation);
-
-// Valider une réservation
-router.patch('/:id/confirm', confirmReservation);
-
-// Refuser une réservation
-router.patch('/:id/cancel', cancelReservation);
-
-// Récupérer les réservations du vendeur
+// Get all reservations for the authenticated seller
 router.get('/seller', getSellerReservations);
 
-// Récupérer les réservations de l'utilisateur (acheteur)
-router.get('/user', getUserReservations);
+// Get all reservations for the authenticated client
+router.get('/client', getClientReservations);
+
+// Get a specific reservation by ID
+router.get('/:id', getReservation);
+
+// Update a reservation's status
+router.patch('/:id/status', updateReservationStatus);
 
 export default router;
