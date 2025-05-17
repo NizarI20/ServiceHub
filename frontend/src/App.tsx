@@ -1,4 +1,3 @@
-
 'use client';
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -20,6 +19,9 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import SellServices from "./pages/SellServices";
+import Reservations from "./pages/Reservations";
+import UserReservations from "./pages/UserReservations";
+import ReservationDetails from "./pages/ReservationDetails";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +54,21 @@ const App = ({ children }: { children: React.ReactNode }) => (
               <Route path="/sellservices" element={
                 <ProtectedRoute requiredRole="provider">
                   <SellServices />
+                </ProtectedRoute>
+              } />
+              <Route path="/reservations" element={
+                <ProtectedRoute requiredRole="provider">
+                  <Reservations />
+                </ProtectedRoute>
+              } />
+              <Route path="/user-reservations" element={
+                <ProtectedRoute requiredRole="client">
+                  <UserReservations />
+                </ProtectedRoute>
+              } />
+              <Route path="/reservation/:reservationId" element={
+                <ProtectedRoute>
+                  <ReservationDetails />
                 </ProtectedRoute>
               } />
               
