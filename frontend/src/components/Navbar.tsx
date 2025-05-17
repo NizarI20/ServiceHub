@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,6 +11,9 @@ const Navbar = () => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const isClient = user?.role === 'client';
+  const isProvider = user?.role === 'provider';
 
   return (
     <nav className="bg-white shadow-md">
@@ -40,14 +42,21 @@ const Navbar = () => {
                   <LayoutDashboard className="w-4 h-4 mr-1" />
                   Dashboard
                 </Link>
-                <Link to="/user-reservations" className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  Mes réservations
-                </Link>
-                <Link to="/reservations" className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50">
-                  <CalendarCheck className="w-4 h-4 mr-1" />
-                  Gérer les réservations
-                </Link>
+                
+                {isClient && (
+                  <Link to="/user-reservations" className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50">
+                    <Calendar className="w-4 h-4 mr-1" />
+                    Mes réservations
+                  </Link>
+                )}
+                
+                {isProvider && (
+                  <Link to="/reservations" className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50">
+                    <CalendarCheck className="w-4 h-4 mr-1" />
+                    Gérer les réservations
+                  </Link>
+                )}
+                
                 <Button
                   variant="ghost"
                   onClick={logout}
@@ -117,22 +126,29 @@ const Navbar = () => {
                 <LayoutDashboard className="w-5 h-5 mr-2" />
                 Dashboard
               </Link>
-              <Link 
-                to="/user-reservations" 
-                className="flex items-center px-4 py-2 text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Calendar className="w-5 h-5 mr-2" />
-                Mes réservations
-              </Link>
-              <Link 
-                to="/reservations" 
-                className="flex items-center px-4 py-2 text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <CalendarCheck className="w-5 h-5 mr-2" />
-                Gérer les réservations
-              </Link>
+              
+              {isClient && (
+                <Link 
+                  to="/user-reservations" 
+                  className="flex items-center px-4 py-2 text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Mes réservations
+                </Link>
+              )}
+              
+              {isProvider && (
+                <Link 
+                  to="/reservations" 
+                  className="flex items-center px-4 py-2 text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <CalendarCheck className="w-5 h-5 mr-2" />
+                  Gérer les réservations
+                </Link>
+              )}
+              
               <button 
                 onClick={() => {
                   logout();

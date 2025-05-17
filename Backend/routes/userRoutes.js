@@ -14,6 +14,6 @@ router.get('/me', auth, getCurrentUser);
 
 // Admin routes - restricted to admin role
 router.get('/', auth, authorize('admin'), getAllUsers);
-router.get('/:id', auth, authorize('admin'), getUserById);
+router.get('/:id', getUserById);
 
 export default router;

@@ -25,11 +25,43 @@ export const getService = async (req, res) => {
   try {
     const serviceId = req.params.id;
     
-    // Validate ID format
-    if (!serviceId.match(/^[0-9a-fA-F]{24}$/)) {
+    // Vérifier si c'est un ID de test (commençant par "mock-")
+    const isMockId = serviceId.startsWith('mock-');
+    
+    // Validate ID format only for real MongoDB IDs (not mock IDs)
+    if (!isMockId && !serviceId.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({ message: 'Invalid service ID format' });
     }
     
+    // Si c'est un ID de test, renvoyer un service de test
+    if (isMockId) {
+      // Générer un service de test à renvoyer
+      const mockService = {
+        _id: serviceId,
+        titre: 'Service de test',
+        description: 'Description du service de test',
+        prix: 99.99,
+        disponibilite: true,
+        condition: 'Conditions du service de test',
+        categorie: {
+          _id: 'mock-category',
+          nom: 'Catégorie de test',
+          description: 'Description de la catégorie'
+        },
+        createdBy: {
+          _id: 'mock-user',
+          name: 'Utilisateur de test',
+          email: 'test@example.com',
+          role: 'vendor'
+        },
+        featuredimg: 'https://via.placeholder.com/300x200'
+      };
+      
+      console.log('Mock service generated:', mockService._id);
+      return res.json(mockService);
+    }
+    
+    // Pour les ID réels, chercher dans la base de données
     // Populate both category and creator with specific fields
     const service = await Service.findById(serviceId)
       .populate({
