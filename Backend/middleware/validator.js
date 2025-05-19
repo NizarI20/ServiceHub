@@ -51,8 +51,15 @@ export const categoryValidationRules = {
 // Reservation validation rules
 export const reservationValidationRules = {
   create: [
-    body('service').notEmpty().withMessage('Service ID is required'),
-    body('date').isISO8601().toDate().withMessage('Valid date is required')
+    body('serviceId').notEmpty().withMessage('Service ID is required'),
+    body('startDate').isISO8601().toDate().withMessage('Valid start date is required'),
+    body('endDate').isISO8601().toDate().withMessage('Valid end date is required')
+      .custom((endDate, { req }) => {
+        if (new Date(endDate) <= new Date(req.body.startDate)) {
+          throw new Error('End date must be after start date');
+        }
+        return true;
+      })
   ],
   updateStatus: [
     body('status').isIn(['pending', 'confirmed', 'completed', 'cancelled']).withMessage('Invalid status')

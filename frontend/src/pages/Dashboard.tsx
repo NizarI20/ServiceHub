@@ -386,7 +386,11 @@ const Dashboard = () => {
 
   const handleToggleServiceStatus = async (serviceId: string, currentStatus: boolean) => {
     try {
-      await api.patch(`/services/${serviceId}`, { active: !currentStatus });
+      // Include both active field and potentially disponibilite for backend compatibility
+      await api.patch(`/services/${serviceId}`, { 
+        active: !currentStatus,
+        disponibilite: !currentStatus
+      });
       
       // Update local state
       setServices(prevServices =>
@@ -651,7 +655,10 @@ const Dashboard = () => {
               </TabsList>
               
               {user?.role === 'provider' && (
-                <Button className="hidden md:flex bg-brand-600 hover:bg-brand-700">
+                <Button 
+                  className="hidden md:flex bg-brand-600 hover:bg-brand-700"
+                  onClick={() => navigate('/SellServices')}
+                >
                   + Add New Service
                 </Button>
               )}
@@ -722,6 +729,7 @@ const Dashboard = () => {
                               variant="outline" 
                               size="sm" 
                               className="flex-1"
+                              onClick={() => navigate(`/SellServices?serviceId=${service._id}`)}
                             >
                               Edit
                             </Button>
@@ -743,7 +751,10 @@ const Dashboard = () => {
                       <h3 className="mt-2 text-lg font-medium text-gray-900">No services yet</h3>
                       <p className="mt-1 text-gray-500">Start adding your services to get bookings.</p>
                       <div className="mt-6">
-                        <Button className="bg-brand-600 hover:bg-brand-700">
+                        <Button 
+                          className="bg-brand-600 hover:bg-brand-700"
+                          onClick={() => navigate('/sellservices')}
+                        >
                           + Add New Service
                         </Button>
                       </div>

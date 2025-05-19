@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -10,6 +10,7 @@ import { Calendar, Clock, MapPin, Tag, Award, ThumbsUp, CheckCircle } from 'luci
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/components/ui/sonner';
 import api from '@/lib/api';
+import { ReservationForm } from '@/components/ReservationForm';
 
 interface ServiceDetail {
   id: string;
@@ -48,35 +49,100 @@ interface Review {
 const ServiceDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { isAuthenticated, user } = useAuth();
   const [service, setService] = useState<ServiceDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bookingLoading, setBookingLoading] = useState(false);
+  const reservationFormRef = useRef<HTMLDivElement>(null);
+  const shouldOpenReservation = searchParams.get('reserve') === 'true';
+
+  useEffect(() => {
+    console.log('Auth state in ServiceDetails:', { isAuthenticated, user });
+  }, [isAuthenticated, user]);
+
+  // Effet pour scroller vers le formulaire de réservation si nécessaire
+  useEffect(() => {
+    if (shouldOpenReservation && reservationFormRef.current && !isLoading && service) {
+      // Scroll to reservation form with smooth behavior
+      reservationFormRef.current.scrollIntoView({ behavior: 'smooth' });
+      
+      // Add visual indication
+      reservationFormRef.current.classList.add('highlight-animation');
+      setTimeout(() => {
+        if (reservationFormRef.current) {
+          reservationFormRef.current.classList.remove('highlight-animation');
+        }
+      }, 2000);
+    }
+  }, [shouldOpenReservation, isLoading, service]);
 
   useEffect(() => {
     const fetchServiceDetails = async () => {
-      if (!id) return;
+      if (!id) {
+        setError('Service ID is missing');
+        setIsLoading(false);
+        return;
+      }
       
       try {
         setIsLoading(true);
         setError(null);
         
+        console.log('Fetching service details for ID:', id);
+        
+        // Récupérer les détails du service
         const response = await api.get(`/services/${id}`);
         console.log('Fetched service detail:', response.data);
   
         const data = response.data;
-        const category = api.get(`/categories/${data.categorie}`);
-        const categoryData = await category;
-        const categoryName = categoryData.data.nom; 
-        const createdBy = api.get(`/users/${data.createdBy}`);
-        const createdByData = await createdBy;
-        const createdByName = createdByData.data.name;
-        const createdByRating = createdByData.data.rating;
-        const createdByCompletedJobs = createdByData.data.completedJobs;
-        const createdByProfileImage = createdByData.data.profileImage;
-        const createdById = createdByData.data._id;
+        if (!data || !data._id) {
+          setError('Service data is incomplete or invalid');
+          setIsLoading(false);
+          return;
+        }
         
+        // Vérifier si categorie est un objet ou un ID
+        let categoryName = 'Uncategorized';
+        try {
+          const categoryId = data.categorie?._id || data.categorie;
+          if (categoryId) {
+            const category = await api.get(`/categories/${categoryId}`);
+            categoryName = category.data?.nom || 'Uncategorized';
+          }
+        } catch (categoryErr) {
+          console.warn('Error fetching category:', categoryErr);
+          // Continue with default category name
+        }
+        
+        // Vérifier si createdBy est un objet ou un ID
+        let providerData = {
+          id: '',
+          name: 'Unknown Provider',
+          rating: undefined,
+          completedJobs: undefined,
+          profileImage: undefined
+        };
+        
+        try {
+          const createdById = data.createdBy?._id || data.createdBy;
+          if (createdById) {
+            const createdByResponse = await api.get(`/users/${createdById}`);
+            if (createdByResponse.data) {
+              providerData = {
+                id: createdById,
+                name: createdByResponse.data.name || 'Unknown Provider',
+                rating: createdByResponse.data.rating,
+                completedJobs: createdByResponse.data.completedJobs,
+                profileImage: createdByResponse.data.profileImage
+              };
+            }
+          }
+        } catch (userErr) {
+          console.warn('Error fetching provider data:', userErr);
+          // Continue with default provider data
+        }
         
         const mappedService: ServiceDetail = {
           id: data._id,
@@ -84,14 +150,8 @@ const ServiceDetails = () => {
           description: data.description,
           longDescription: data.description, // Using description as longDescription
           price: data.prix,
-          category: categoryName || 'Uncategorized',
-          provider: {
-            id: data.createdBy?._id || '',
-            name: data.createdBy?.name || 'Unknown',
-            rating: data.createdBy?.rating,
-            completedJobs: data.createdBy?.completedJobs,
-            profileImage: data.createdBy?.profileImage,
-          },
+          category: categoryName,
+          provider: providerData,
           imageUrl: data.featuredimg,
           disponibilite: data.disponibilite,
           condition: data.condition,
@@ -108,9 +168,24 @@ const ServiceDetails = () => {
         };
   
         setService(mappedService);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching service details:', err);
-        setError('Failed to load service details. Please try again later.');
+        let errorMsg = 'Failed to load service details. Please try again later.';
+        
+        // Fournir des messages d'erreur plus spécifiques
+        if (err.response) {
+          if (err.response.status === 404) {
+            errorMsg = 'Service not found. It may have been deleted or moved.';
+          } else if (err.response.status === 400) {
+            errorMsg = 'Invalid service request. Please check the service ID.';
+          } else if (err.response.status >= 500) {
+            errorMsg = 'Server error. Please try again later.';
+          }
+        } else if (err.request) {
+          errorMsg = 'Network error. Please check your connection and try again.';
+        }
+        
+        setError(errorMsg);
       } finally {
         setIsLoading(false);
       }
@@ -187,6 +262,14 @@ const ServiceDetails = () => {
       
       <div className="flex-grow bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Disponibilité du service */}
+          {!service.disponibilite && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6 text-sm flex items-center">
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Ce service est actuellement indisponible à la réservation
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2">
@@ -302,7 +385,7 @@ const ServiceDetails = () => {
             
             {/* Sidebar */}
             <div>
-              <Card className="sticky top-6">
+              <Card className="sticky top-6" ref={reservationFormRef}>
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold">${service.price}</CardTitle>
                   <CardDescription>
@@ -350,20 +433,55 @@ const ServiceDetails = () => {
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter>
-                  <Button 
-                    className="w-full bg-brand-600 hover:bg-brand-700"
-                    onClick={handleBookService}
-                    disabled={bookingLoading}
-                  >
-                    {bookingLoading ? 'Processing...' : 'Book This Service'}
-                  </Button>
+                <CardFooter className="flex flex-col">
+                  {isAuthenticated ? (
+                    service.disponibilite ? (
+                      <ReservationForm 
+                        serviceId={service.id}
+                        serviceName={service.title}
+                        price={service.price}
+                      />
+                    ) : (
+                      <div className="text-center p-4 bg-gray-50 rounded-md">
+                        <p className="text-gray-600 mb-2">Ce service n'est pas disponible actuellement</p>
+                        <Button 
+                          variant="outline"
+                          onClick={() => navigate('/services')}
+                          className="mt-2"
+                        >
+                          Voir d'autres services
+                        </Button>
+                      </div>
+                    )
+                  ) : (
+                    <Button 
+                      className="w-full bg-brand-600 hover:bg-brand-700"
+                      onClick={() => navigate('/login')}
+                    >
+                      Se connecter pour réserver
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Ajout d'un style pour l'animation de surbrillance */}
+      <style>
+        {`
+          @keyframes highlight {
+            0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.1); }
+            50% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0.3); }
+            100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.1); }
+          }
+          
+          .highlight-animation {
+            animation: highlight 2s ease-in-out;
+          }
+        `}
+      </style>
     </div>
   );
 };

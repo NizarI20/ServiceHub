@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import cors from 'cors';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
+import { initScheduledTasks } from './utils/scheduledTasks.js';
 
 // Route imports
 import serviceRoutes from './routes/serviceRoutes.js';
@@ -52,6 +53,9 @@ app.use(errorHandler);
 // Start server
 const server = app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  
+  // Initialiser les tâches planifiées
+  initScheduledTasks();
 });
 
 // Handle unhandled promise rejections
