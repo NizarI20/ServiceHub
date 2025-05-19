@@ -10,7 +10,14 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/NizarI20/ServiceHub.git'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']], // or the actual branch name
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/NizarI20/ServiceHub.git',
+                        credentialsId: '40e9e9d0-c439-47e6-b080-4123ce907b99' // 🟡 Replace this!
+                    ]]
+                ])
             }
         }
 
