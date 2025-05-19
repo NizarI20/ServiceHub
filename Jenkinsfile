@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'node-22'
+    }
+    
     environment {
         BACKEND_DIR = "Backend"
         FRONTEND_DIR = "frontend"
