@@ -36,7 +36,8 @@ pipeline {
         stage('Install & Build Frontend') {
             steps {
                 dir("${FRONTEND_DIR}") {
-                    sh 'npm install'
+                    sh 'rm -rf node_modules package-lock.json'
+                    sh 'npm install --legacy-peer-deps'
                     sh 'npm run build'
                 }
             }
