@@ -4,7 +4,6 @@ pipeline {
     tools {
         nodejs 'node22'
     }
-
     environment {
         BACKEND_DIR = "Backend"
         FRONTEND_DIR = "frontend"
