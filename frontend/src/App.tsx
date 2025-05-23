@@ -1,4 +1,3 @@
-
 'use client';
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -8,6 +7,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Import pages
 import Home from "./pages/Index";
@@ -19,6 +19,9 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import SellServices from "./pages/SellServices";
+import Reservations from "./pages/Reservations";
+import UserReservations from "./pages/UserReservations";
+import ReservationDetails from "./pages/ReservationDetails";
 
 const queryClient = new QueryClient();
 
@@ -30,14 +33,45 @@ const App = ({ children }: { children: React.ReactNode }) => (
           <Navbar />
           <main className="flex-grow">
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/services" element={<Services />} />
               <Route path="/services/:id" element={<ServiceDetails />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/sellservices" element={<SellServices />} />
+              
+              {/* Protected Routes - require authentication */}
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/sellservices" element={
+                <ProtectedRoute requiredRole="provider">
+                  <SellServices />
+                </ProtectedRoute>
+              } />
+              <Route path="/reservations" element={
+                <ProtectedRoute requiredRole="provider">
+                  <Reservations />
+                </ProtectedRoute>
+              } />
+              <Route path="/user-reservations" element={
+                <ProtectedRoute requiredRole="client">
+                  <UserReservations />
+                </ProtectedRoute>
+              } />
+              <Route path="/reservation/:reservationId" element={
+                <ProtectedRoute>
+                  <ReservationDetails />
+                </ProtectedRoute>
+              } />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

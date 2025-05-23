@@ -7,14 +7,17 @@ import {
   updateService, 
   deleteService 
 } from '../controllers/ServiceController.js';
+import { auth, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Service routes
+// Public routes
 router.get('/', getAllServices);
 router.get('/:id', getService);
-router.post('/', createService);
-router.put('/:id', updateService);
-router.delete('/:id', deleteService);
+
+// Protected routes - require authentication and provider role
+router.post('/', auth, authorize('provider'), createService);
+router.put('/:id', auth, updateService);
+router.delete('/:id', auth, deleteService);
 
 export default router;
