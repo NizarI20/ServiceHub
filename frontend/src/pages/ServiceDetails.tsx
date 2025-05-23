@@ -66,14 +66,25 @@ const ServiceDetails = () => {
         console.log('Fetched service detail:', response.data);
   
         const data = response.data;
-  
+        const category = api.get(`/categories/${data.categorie}`);
+        const categoryData = await category;
+        const categoryName = categoryData.data.nom; 
+        const createdBy = api.get(`/users/${data.createdBy}`);
+        const createdByData = await createdBy;
+        const createdByName = createdByData.data.name;
+        const createdByRating = createdByData.data.rating;
+        const createdByCompletedJobs = createdByData.data.completedJobs;
+        const createdByProfileImage = createdByData.data.profileImage;
+        const createdById = createdByData.data._id;
+        
+        
         const mappedService: ServiceDetail = {
           id: data._id,
           title: data.titre,
           description: data.description,
           longDescription: data.description, // Using description as longDescription
           price: data.prix,
-          category: data.categorie?.nom || 'Uncategorized',
+          category: categoryName || 'Uncategorized',
           provider: {
             id: data.createdBy?._id || '',
             name: data.createdBy?.name || 'Unknown',
